@@ -1,0 +1,3 @@
+chain,token,pair_liquidity_usd,pair_volume_24h_usd,top1_percent,pair_age_days,contract_verified,contract_age_days,avg_score,recommendation
+ethereum,0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48,104494241.77,2163324.01,5850431.633585208,1868,,,3.67,✅ Aceptable
+ethereum,0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48,104471224.73,2164799.62,5849347.722675067,30163384.371027317,0.0,1868,,,3.12,⚠️ Especulativo

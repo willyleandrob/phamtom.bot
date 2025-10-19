@@ -1,0 +1,16 @@
+[ethplorer]
+api_key = "freekey"
+
+[etherscan]
+api_key = "RRNY59QINJVTNCKS3JI35P3Y36I8AEFMZT"
+
+[telegram]
+bot_token = "8482142574:AAHZCBb1FO6y6wPl-Ii1qusEc_g9aqhqnrg"
+chat_id   = "5250306220"
+
+[watcher]
+enabled = true
+scan_interval_minutes = 15
+chains = ["ethereum", "bsc", "polygon"]
+min_liquidity_usd = 50000
+min_social_score = 4.0
