@@ -35,30 +35,41 @@ class DexScreener:
             return None
         pairs.sort(key=lambda p: float((p.get("liquidity", {}) or {}).get("usd", 0) or 0), reverse=True)
         return pairs[0]
-    def get_new_tokens(self, chain: str, limit: int = 50) -> list:
+        def get_new_tokens(self, chain: str, max_age_minutes: int = 180, limit: int = 200) -> List[Dict[str, Any]]:
         """
-        Retorna lista de tokens recientemente listados en la cadena dada.
-        Devuelve estructuras tipo:
-        {
-            'tokenAddress': '0x...',
-            'symbol': 'ABC',
-            'liquidity': {'usd': 12345.67},
-            'url': 'https://dexscreener.com/chain/0xPAIR',
-            'socials': [...]
-        }
+        Busca pares recientemente creados en una chain usando:
+        GET /latest/dex/pairs/{chain}
+        Filtra por edad del par (pairCreatedAt) en los últimos 'max_age_minutes'.
+        Devuelve entradas normalizadas con: tokenAddress, symbol, liquidity.usd, url, socials.
         """
-        url = f"https://api.dexscreener.com/latest/dex/search?q=&chain={chain}"
-        r = requests.get(url, timeout=20)
+        import time
+        url = f"{self.BASE}/pairs/{chain}"
+        r = requests.get(url, timeout=25)
         if r.status_code != 200:
             return []
-        data = r.json().get("pairs") or []
-        results = []
-        for p in data[:limit]:
-            results.append({
-                'tokenAddress': p.get('baseToken', {}).get('address'),
-                'symbol': p.get('baseToken', {}).get('symbol'),
-                'liquidity': p.get('liquidity', {}),
-                'url': p.get('url'),
-                'socials': p.get('socials') or []
-            })
-        return results
+
+        now_ms = int(time.time() * 1000)
+        max_age_ms = max_age_minutes * 60 * 1000
+        pairs = (r.json() or {}).get("pairs") or []
+
+        fresh = []
+        for p in pairs:
+            try:
+                created_ms = int(p.get("pairCreatedAt") or 0)
+            except Exception:
+                created_ms = 0
+
+            # toma los creados en la ventana de tiempo
+            if created_ms and (now_ms - created_ms) <= max_age_ms:
+                fresh.append({
+                    "tokenAddress": (p.get("baseToken") or {}).get("address"),
+                    "symbol": (p.get("baseToken") or {}).get("symbol"),
+                    "liquidity": p.get("liquidity") or {},
+                    "url": p.get("url"),
+                    "socials": p.get("socials") or [],
+                    "raw": p,  # para debug opcional
+                })
+
+        # limita cantidad para no spamear
+        return fresh[:limit]
+

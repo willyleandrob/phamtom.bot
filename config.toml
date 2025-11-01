@@ -10,7 +10,7 @@ chat_id   = "5250306220"
 
 [watcher]
 enabled = true
-scan_interval_minutes = 15
+scan_interval_minutes = 5        # antes 15
 chains = ["ethereum", "bsc", "polygon"]
-min_liquidity_usd = 50000
-min_social_score = 4.0
+min_liquidity_usd = 10000        # antes 50000 (solo para probar)
+min_social_score = 3.0           # antes 4.0 (solo para probar)
